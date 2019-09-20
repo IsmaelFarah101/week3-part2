@@ -64,21 +64,16 @@ class PhoneAssignments():
         # TODO if phone is already assigned to an employee, do not change list, raise exception
         # TODO if employee already has a phone, do not change list, and raise exception
         # TODO if employee already has this phone, don't make any changes. This should NOT raise an exception.
-        for people in self.employees:
-            for phone in self.phones:
-                if phone.is_assigned() == people.id:
-                    raise PhoneError('Employee already assigned a phone')
-                if phone.id == phone_id:
-                    if phone.is_assigned() is None:
-                        phone.assign(employee.id)
-                        return phone
-                    elif phone.is_assigned() is not None:
-                        if phone.is_assigned() == employee.id:
-                            return phone
-                        else:
-                            raise PhoneError('Phone is already assigned to an employee')
-                    
-
+        for phone in self.phones:
+            if phone.id == phone_id and phone.employee_id is not None:
+                raise PhoneError('Phone is already assigned')
+        for phone in self.phones:
+            if phone.employee_id == employee.id:
+                raise PhoneError('Employee already assigned a phone')
+        for phone in self.phones:
+            if phone.id == phone_id:
+                phone.assign(employee.id)
+                return
 
     def un_assign(self, phone_id):
         # Find phone in list, set employee_id to None
@@ -93,12 +88,13 @@ class PhoneAssignments():
         # TODO  should return None if the employee does not have a phone
         # TODO  the method should raise an exception if the employee does not exist
 
+        if employee not in self.employees:
+            raise PhoneError('Employee does not exist')
+
         for phone in self.phones:
             if phone.employee_id == employee.id:
                 return phone
-        
-        if employee not in self.employees:
-            raise PhoneError('Employee not in list')
+
 
         return None
 
